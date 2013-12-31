@@ -1,0 +1,17 @@
+<html>
+<head>
+  <title></title>
+  <script src="http://libs.baidu.com/jquery/1.10.0/jquery.js"></script>
+</head>
+<body>
+  <div>
+  </div>
+<script>
+  window.ws = new WebSocket("ws://0.0.0.0:8080/");
+  ws.onmessage = function(a){$('div').append(a.data);};
+  ws.send("{\"action\":\"get_position\"}");
+  ws.send("{\"action\":\"get_heros\"}");
+  ws.send("{\"action\":\"get_heros\"}");
+</script>
+</body>
+</html>
