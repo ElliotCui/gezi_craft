@@ -8,15 +8,13 @@ class Hero
   ARMOR_MEDIUM          = 1
   ARMOR_HEAVY           = 2
 
-  COMMON_ATTACK         = 0
-  SPECIAL_SKILL         = 1
-
-  attr_reader :name, :attack_type, :attack_value, :attack_length, :armor_type, :armor_value, :speed, :health, :skill_name, :skill_description
-  attr_accessor :current_health, :skill_used, :turn_move, :turn_attack
+  attr_reader :name, :attack_type, :attack_length, :armor_type, :speed, :health, :skill_name, :skill_description, :avatar, :scope
+  attr_accessor :current_health, :skill_used, :turn_move, :turn_attack, :attack_value, :armor_value
 
   def initialize
     self.current_health = self.health
     self.skill_used = false
+    @avatar = "http://img.kechenggezi.com/hack_day/gezi_craft_avatars/#{self.class.name.downcase}.png"
   end
 
   class << self
@@ -38,6 +36,13 @@ class Hero
     end
   end
 
+  def add_current_health count
+    self.current_health += count
+    if self.current_health > self.health
+      self.current_health = self.health
+    end
+  end
+
   def id
     self.class.id
   end
@@ -45,6 +50,8 @@ class Hero
   def to_json *args
     {
       name: name,
+      avatar: avatar,
+      scope: scope,
       type: self.class.type || "无",
       current_health: current_health,
       attack_type: attack_type,
@@ -74,6 +81,7 @@ class Programmer < Hero
     @armor_value = 6
     @health = 85
     @speed = 6
+    @scope = 1
     @attack_length = 1
     super
   end
@@ -90,6 +98,7 @@ class Designer < Hero
     @attack_value = 32
     @attack_length = 4
     @armor_value = 4
+    @scope = 4
     @speed = 4
     @health = 50
     super
@@ -107,6 +116,7 @@ class PM < Hero
     @attack_value = 15
     @attack_length = 1
     @armor_value = 8
+    @scope = 1
     @speed = 5
     @health = 115
     super
@@ -124,6 +134,7 @@ class OO < Hero
     @attack_value = 25
     @attack_length = 3
     @armor_value = 7
+    @scope = 3
     @speed = 8
     @health = 65
     super

@@ -13,10 +13,9 @@ require './game'
 # puts David.new.to_json
 
 game = Game.new
-binding.pry
 EM.run {
   puts "Begin listen 0.0.0.0:8080"
-  EM::WebSocket.start(:host => "0.0.0.0", :port => 9090) do |ws|
+  EM::WebSocket.start(:host => "0.0.0.0", :port => 8080) do |ws|
     ws.onopen { |handshake| puts "Connect" }
 
     # puts ws.object_id

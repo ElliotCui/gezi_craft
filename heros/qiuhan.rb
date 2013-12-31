@@ -7,11 +7,13 @@ class QiuHan < Programmer
     super
   end
 
-  def skill
+  def skill player
     self.current_health += 60
     if self.current_health > self.health
       self.current_health = self.health
     end
+    self.skill_used = true
+    "邱晗使用大胃王技能，吞下一个大包子，生命恢复60点，我胡汉三又回来了！"
   end
   record
 end

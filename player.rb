@@ -12,20 +12,19 @@ class Player
     bind_callback
   end
 
-  def ready
-    self.ready = true
-    check_start
-  end
-
   def fresh_actions
-    self.heros.each do |h|
+    self.heros.each do |id, h|
       h.turn_attack = true
       h.turn_move = true
     end
   end
 
   def has_actions?
-    self.heros.map { |h| [h.turn_attack, h.turn_move] }.flatten.any?
+    self.heros.map { |id, h| [h.turn_attack, h.turn_move] }.flatten.any?
+  end
+
+  def random_hero
+    heros[heros.keys.sample]
   end
 
   def opponent
@@ -36,10 +35,28 @@ class Player
     heros.to_json
   end
 
+  def bleed hero, damage
+    hero.current_health -= damage
+    if hero.current_health <= 0
+      heros.delete hero.id
+    end
+
+    if heros.empty?
+      game.broadcast_game_status
+      ws.send({action: 'game_over', result: 'loser'}.to_json)
+      opponent.ws.send({action: 'game_over', result: 'winner'}.to_json)
+      game.game_over
+      # game.broadcast(game.as_json.merge({action: 'game_over', winner: "玩家#{opponent.position}" }).to_json)
+      return false
+    end
+    true
+  end
+
   private
 
   def get_player
     ws.send({action: "get_player", position: position}.to_json)
+    game.broadcast_game_status
   end
 
   def get_heros
@@ -59,10 +76,14 @@ class Player
 
       args = json.values
       action = args[0]
-      if %w(get_player get_heros).include? action
-        send(action, *args[1..-1])
-      else
-        game.send(action, *(args[1..-1].unshift(position)))
+      begin
+        if %w(get_player get_heros).include? action
+          send(action, *args[1..-1])
+        else
+          game.send(action, *(args[1..-1].unshift(position)))
+        end
+      rescue Exception => e
+        puts "Error: #{e}"
       end
     }
 
